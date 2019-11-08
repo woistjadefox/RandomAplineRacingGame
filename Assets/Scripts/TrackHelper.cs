@@ -11,6 +11,9 @@ public class TrackHelper : MonoBehaviour
     private float minDistanceToShowHelper = 10;
 
     [SerializeField]
+    private float forwardDistance = 10;
+
+    [SerializeField]
     private Transform vehicle;
 
     [SerializeField]
@@ -19,21 +22,30 @@ public class TrackHelper : MonoBehaviour
     [SerializeField]
     private Transform trackHelper;
 
+    [SerializeField]
+    private Transform lookAtHelper;
+
     private void Start() {
         
     }
 
     private void Update()
     {
-        Vector3 pos = curve.CalcPositionByClosestPoint(vehicle.position);
-        trackHelper.position = pos;
+        Vector3 forwardVehiclePos = vehicle.position + (vehicle.forward * forwardDistance);
+        Vector3 posHelper = curve.CalcPositionByClosestPoint(forwardVehiclePos);
+        Vector3 posEffective = curve.CalcPositionByClosestPoint(vehicle.position );
+        trackHelper.position = posHelper;
 
-        float distance = Vector3.Distance(vehicle.position, pos);
+        float distance = Vector3.Distance(vehicle.position, posEffective);
 
         if(distance > minDistanceToShowHelper) {
             trackHelper.gameObject.SetActive(true);
+            lookAtHelper.gameObject.SetActive(true);
+
+            lookAtHelper.LookAt(posHelper);
         } else {
             trackHelper.gameObject.SetActive(false);
+            lookAtHelper.gameObject.SetActive(false);
         }
     }
 }
